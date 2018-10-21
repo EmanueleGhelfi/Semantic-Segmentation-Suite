@@ -57,25 +57,25 @@ def build_mobile_unet(inputs, preset_model, num_classes):
 	skip_1 = net
 
 	net = DepthwiseSeparableConvBlock(net, 128)
-	net = DepthwiseSeparableConvBlock(net, 128)
+	#net = DepthwiseSeparableConvBlock(net, 128)
 	net = slim.pool(net, [2, 2], stride=[2, 2], pooling_type='MAX')
 	skip_2 = net
 
 	net = DepthwiseSeparableConvBlock(net, 256)
-	net = DepthwiseSeparableConvBlock(net, 256)
+	#net = DepthwiseSeparableConvBlock(net, 256)
 	net = DepthwiseSeparableConvBlock(net, 256)
 	net = slim.pool(net, [2, 2], stride=[2, 2], pooling_type='MAX')
 	skip_3 = net
 
 	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
 	net = slim.pool(net, [2, 2], stride=[2, 2], pooling_type='MAX')
 	skip_4 = net
 
 	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
 	net = slim.pool(net, [2, 2], stride=[2, 2], pooling_type='MAX')
 
 
@@ -83,35 +83,35 @@ def build_mobile_unet(inputs, preset_model, num_classes):
 	# Upsampling path #
 	#####################
 	net = conv_transpose_block(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
 	net = DepthwiseSeparableConvBlock(net, 512)
 	if has_skip:
 		net = tf.add(net, skip_4)
 
 	net = conv_transpose_block(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
-	net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
+	#net = DepthwiseSeparableConvBlock(net, 512)
 	net = DepthwiseSeparableConvBlock(net, 256)
 	if has_skip:
 		net = tf.add(net, skip_3)
 
 	net = conv_transpose_block(net, 256)
-	net = DepthwiseSeparableConvBlock(net, 256)
-	net = DepthwiseSeparableConvBlock(net, 256)
+	#net = DepthwiseSeparableConvBlock(net, 256)
+	#net = DepthwiseSeparableConvBlock(net, 256)
 	net = DepthwiseSeparableConvBlock(net, 128)
 	if has_skip:
 		net = tf.add(net, skip_2)
 
 	net = conv_transpose_block(net, 128)
-	net = DepthwiseSeparableConvBlock(net, 128)
-	net = DepthwiseSeparableConvBlock(net, 64)
+	#net = DepthwiseSeparableConvBlock(net, 128)
+	#net = DepthwiseSeparableConvBlock(net, 64)
 	if has_skip:
 		net = tf.add(net, skip_1)
 
 	net = conv_transpose_block(net, 64)
-	net = DepthwiseSeparableConvBlock(net, 64)
-	net = DepthwiseSeparableConvBlock(net, 64)
+	#net = DepthwiseSeparableConvBlock(net, 64)
+	#net = DepthwiseSeparableConvBlock(net, 64)
 
 	#####################
 	#      Softmax      #
