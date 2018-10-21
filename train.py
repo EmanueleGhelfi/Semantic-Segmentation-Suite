@@ -35,8 +35,8 @@ parser.add_argument('--validation_step', type=int, default=1, help='How often to
 parser.add_argument('--image', type=str, default=None, help='The image you want to predict on. Only valid in "predict" mode.')
 parser.add_argument('--continue_training', type=str2bool, default=False, help='Whether to continue training from a checkpoint')
 parser.add_argument('--dataset', type=str, default="CamVid", help='Dataset you are using.')
-parser.add_argument('--crop_height', type=int, default=512, help='Height of cropped input image to network')
-parser.add_argument('--crop_width', type=int, default=512, help='Width of cropped input image to network')
+parser.add_argument('--crop_height', type=int, default=320, help='Height of cropped input image to network')
+parser.add_argument('--crop_width', type=int, default=320, help='Width of cropped input image to network')
 parser.add_argument('--batch_size', type=int, default=1, help='Number of images in each batch')
 parser.add_argument('--num_val_images', type=int, default=20, help='The number of images to used for validations')
 parser.add_argument('--h_flip', type=str2bool, default=False, help='Whether to randomly flip the image horizontally for data augmentation')
@@ -44,7 +44,7 @@ parser.add_argument('--v_flip', type=str2bool, default=False, help='Whether to r
 parser.add_argument('--brightness', type=float, default=None, help='Whether to randomly change the image brightness for data augmentation. Specifies the max bightness change as a factor between 0.0 and 1.0. For example, 0.1 represents a max brightness change of 10%% (+-).')
 parser.add_argument('--rotation', type=float, default=None, help='Whether to randomly rotate the image for data augmentation. Specifies the max rotation angle in degrees.')
 parser.add_argument('--model', type=str, default="FC-DenseNet56", help='The model you are using. See model_builder.py for supported models')
-parser.add_argument('--frontend', type=str, default="ResNet101", help='The frontend you are using. See frontend_builder.py for supported models')
+parser.add_argument('--frontend', type=str, default="ResNet50", help='The frontend you are using. See frontend_builder.py for supported models')
 args = parser.parse_args()
 
 
@@ -89,7 +89,7 @@ sess=tf.Session(config=config)
 
 
 # Compute your softmax cross entropy loss
-net_input = tf.placeholder(tf.float32,shape=[None,None,None,3])
+net_input = tf.placeholder(tf.float32,shape=[None,None,None,4])
 net_output = tf.placeholder(tf.float32,shape=[None,None,None,num_classes])
 
 network, init_fn = model_builder.build_model(model_name=args.model, frontend=args.frontend, net_input=net_input, num_classes=num_classes, crop_width=args.crop_width, crop_height=args.crop_height, is_training=True)
@@ -159,7 +159,7 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     # Equivalent to shuffling
     id_list = np.random.permutation(len(train_input_names))
 
-    num_iters = int(np.floor(len(id_list) / args.batch_size))
+    num_iters = 5
     st = time.time()
     epoch_st=time.time()
     for i in range(num_iters):
@@ -172,12 +172,11 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
         for j in range(args.batch_size):
             index = i*args.batch_size + j
             id = id_list[index]
-            input_image = utils.load_image(train_input_names[id])
+            input_image = np.load(train_input_names[id])
             output_image = utils.load_image(train_output_names[id])
 
             with tf.device('/cpu:0'):
                 input_image, output_image = data_augmentation(input_image, output_image)
-
 
                 # Prep the data. Make sure the labels are in one-hot format
                 input_image = np.float32(input_image) / 255.0
@@ -193,8 +192,10 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
             input_image_batch = np.squeeze(np.stack(input_image_batch, axis=1))
             output_image_batch = np.squeeze(np.stack(output_image_batch, axis=1))
 
+        print("Training.....")
         # Do the training
         _,current=sess.run([opt,loss],feed_dict={net_input:input_image_batch,net_output:output_image_batch})
+        print("Loss: ", current)
         current_losses.append(current)
         cnt = cnt + args.batch_size
         if cnt % 20 == 0:
@@ -235,8 +236,8 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
         # Do the validation on a small set of validation images
         for ind in val_indices:
 
-            input_image = np.expand_dims(np.float32(utils.load_image(val_input_names[ind])[:args.crop_height, :args.crop_width]),axis=0)/255.0
-            gt = utils.load_image(val_output_names[ind])[:args.crop_height, :args.crop_width]
+            input_image = np.load(val_input_names[ind])/255.0
+            gt = utils.load_image(val_output_names[ind])
             gt = helpers.reverse_one_hot(helpers.one_hot_it(gt, label_values))
 
             # st = time.time()

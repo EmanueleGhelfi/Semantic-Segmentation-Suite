@@ -22,22 +22,28 @@ def prepare_data(dataset_dir):
     test_output_names=[]
     for file in os.listdir(dataset_dir + "/train"):
         cwd = os.getcwd()
-        train_input_names.append(cwd + "/" + dataset_dir + "/train/" + file)
+        if file != ".DS_Store":
+            train_input_names.append(cwd + "/" + dataset_dir + "/train/" + file)
     for file in os.listdir(dataset_dir + "/train_labels"):
         cwd = os.getcwd()
-        train_output_names.append(cwd + "/" + dataset_dir + "/train_labels/" + file)
+        if file != ".DS_Store":
+            train_output_names.append(cwd + "/" + dataset_dir + "/train_labels/" + file)
     for file in os.listdir(dataset_dir + "/val"):
         cwd = os.getcwd()
-        val_input_names.append(cwd + "/" + dataset_dir + "/val/" + file)
+        if file != ".DS_Store":
+            val_input_names.append(cwd + "/" + dataset_dir + "/val/" + file)
     for file in os.listdir(dataset_dir + "/val_labels"):
         cwd = os.getcwd()
-        val_output_names.append(cwd + "/" + dataset_dir + "/val_labels/" + file)
+        if file != ".DS_Store":
+            val_output_names.append(cwd + "/" + dataset_dir + "/val_labels/" + file)
     for file in os.listdir(dataset_dir + "/test"):
         cwd = os.getcwd()
-        test_input_names.append(cwd + "/" + dataset_dir + "/test/" + file)
+        if file != ".DS_Store":
+            test_input_names.append(cwd + "/" + dataset_dir + "/test/" + file)
     for file in os.listdir(dataset_dir + "/test_labels"):
         cwd = os.getcwd()
-        test_output_names.append(cwd + "/" + dataset_dir + "/test_labels/" + file)
+        if file != ".DS_Store":
+            test_output_names.append(cwd + "/" + dataset_dir + "/test_labels/" + file)
     train_input_names.sort(),train_output_names.sort(), val_input_names.sort(), val_output_names.sort(), test_input_names.sort(), test_output_names.sort()
     return train_input_names,train_output_names, val_input_names, val_output_names, test_input_names, test_output_names
 
